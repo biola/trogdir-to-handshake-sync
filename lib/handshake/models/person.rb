@@ -15,6 +15,10 @@ class Handshake::Models::Person < Handshake::Models::Base
     users.map { |user| self.new(user) }
   end
 
+  def client
+    self.class.client
+  end
+
 end
 
   # Below are all the attributes from Handshake
