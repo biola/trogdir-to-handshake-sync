@@ -1,0 +1,3 @@
+handshake:
+  url: "https://app.joinhandshake.com/api/v1"
+  token: ""
