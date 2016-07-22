@@ -1,7 +1,7 @@
 class Handshake::Models::Person < Handshake::Models::Base
   include Handshake::Exceptions
 
-  ATTRS = [:type, :id, :username, :first_name, :last_name, :email_address, :mobile_number]
+  ATTRS = [:user_type, :id, :username, :first_name, :last_name, :email_address, :mobile_number]
 
   define_accessors(ATTRS)
 
@@ -11,8 +11,34 @@ class Handshake::Models::Person < Handshake::Models::Base
     response = self.client.get
     raise Handshake::Exceptions::ApiError unless response["success"]
 
+    return nil if response["users"].empty?
     users = response["users"]
     users.map { |user| self.new(user) }
+  end
+
+  def self.find(params = {})
+    return nil if params.empty?
+    response = client.get(params)
+
+    return nil if response["users"].empty?
+    user = response["users"].first
+    self.new(user)
+  end
+
+  def save
+    response = client.post(attributes)
+  end
+
+  def update
+    response = client.put(attributes)
+  end
+
+  def destroy
+    response = client.delete(attributes)
+  end
+
+  def attributes
+    attributes = Hash[ ATTRS.map { |attr| [attr, self.send(attr)] } ]
   end
 
 end
