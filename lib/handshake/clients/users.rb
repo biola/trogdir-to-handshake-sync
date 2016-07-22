@@ -1,15 +1,21 @@
-require "handshake/client"
-
 module Handshake::Clients
   class Users < Handshake::Client
 
-    get "/users", as: :find
+    get "/users"
 
-    post "/users", as: :create
+    post "/users"
 
-    put "/users/update", as: :update
+    post "/users/start_sync", as: :start_sync
 
-    delete "/users/destroy", as: :delete
+    post "/users/create_or_update", as: :create_or_update
+
+    post "/users/sync_details", as: :sync_details
+
+    post "/users/end_sync", as: :end_sync
+
+    put "/users/update"
+
+    delete "/users/destroy"
 
   end
 end
