@@ -1,7 +1,3 @@
-require 'handshake/config'
-require 'rest-client'
-require 'json'
-
 class Handshake::Client
   extend Handshake::Config
 
@@ -15,16 +11,23 @@ class Handshake::Client
   #      get "/users", as: :find
   #      post "/users", as: :create
 
-  http_methods.each do |method|
-    self.define_singleton_method(method) do |endpoint, options = {}|
-      method_name = options.fetch(:as)
+  http_methods.each do |http_method|
+    self.define_singleton_method(http_method) do |endpoint, options = {}|
+      instance_method_name = options[:as] || http_method
       headers = authorization.merge(options[:headers] || {})
 
-      define_method(options.fetch(:as)) do |params = nil|
-        params = { :params => params }
+      define_method(instance_method_name) do |params = nil|
+        params = { params: params }
+        id = params[:id]
+        url = base_url + endpoint
 
-        response = RestClient::Request.execute(method: method,
-                                               url: base_url + endpoint,
+        if id
+          url << "/#{id}"
+          params.delete(:id)
+        end
+
+        response = RestClient::Request.execute(method: http_method,
+                                               url: url,
                                                headers: headers.merge(params) )
         JSON.parse(response)
       end
