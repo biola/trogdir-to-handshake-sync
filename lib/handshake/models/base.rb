@@ -37,4 +37,9 @@ class Handshake::Models::Base
       end
     end
   end
+
+  # Note: this is an instance method
+  def client
+    self.class.client
+  end
 end
