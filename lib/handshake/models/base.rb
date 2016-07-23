@@ -1,45 +1,58 @@
-class Handshake::Models::Base
-  include Handshake::Exceptions
+module Handshake::Models
 
-  class << self
-    attr_accessor :client
-  end
+  # All Handshake models inherit from this base class.
+  # The idea is for the subclasses to set an ATTRS constant with
+  # an array of attributes. Calling .define_accessors will 
+  # dynamically create setters and getters for them.
 
-  def self.define_accessors(attributes)
-    attributes.map(&:to_s).each do |name|
-      create_setter(name)
-      create_getter(name)
+  class Base
+    include Handshake::Exceptions
+
+    class << self
+      attr_accessor :client
     end
-  end
 
-  def self.create_setter(name)
-    create_instance_method("#{name}=".to_sym) do |val|
-      instance_variable_set("@" + name, val)
+    attr_accessor :errors
+
+    # Class Methods
+
+    def self.define_accessors(attributes)
+      attributes.map(&:to_s).each do |name|
+        create_setter(name)
+        create_getter(name)
+      end
     end
-  end
 
-  def self.create_getter(name)
-    create_instance_method(name.to_sym) do
-      instance_variable_get("@" + name)
+    def self.create_setter(name)
+      create_instance_method("#{name}=".to_sym) do |val|
+        instance_variable_set("@" + name, val)
+      end
     end
-  end
 
-  def self.create_instance_method(name, &block)
-    self.send(:define_method, name, &block)
-  end
+    def self.create_getter(name)
+      create_instance_method(name.to_sym) do
+        instance_variable_get("@" + name)
+      end
+    end
 
-  def initialize(attributes = nil)
-    if attributes
-      attributes.each do |key, value|
-        if self.respond_to? key.to_sym
-          self.send("#{key}=".to_sym, value)
+    def self.create_instance_method(name, &block)
+      self.send(:define_method, name, &block)
+    end
+
+    # Instance Methods
+
+    def initialize(attributes = nil)
+      if attributes
+        attributes.each do |key, value|
+          if self.respond_to? key.to_sym
+            self.send("#{key}=".to_sym, value)
+          end
         end
       end
     end
-  end
 
-  # Note: this is an instance method
-  def client
-    self.class.client
+    def client
+      self.class.client
+    end
   end
 end

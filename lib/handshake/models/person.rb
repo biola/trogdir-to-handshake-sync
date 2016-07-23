@@ -1,46 +1,75 @@
-class Handshake::Models::Person < Handshake::Models::Base
-  include Handshake::Exceptions
+module Handshake::Models
+  class Person < Base
+    include Handshake::Exceptions
 
-  ATTRS = [:user_type, :id, :username, :first_name, :last_name, :email_address, :mobile_number]
+    ATTRS = [:user_type, :id, :username, :first_name, :last_name, :email_address, :mobile_number]
 
-  define_accessors(ATTRS)
+    define_accessors(ATTRS)
 
-  self.client = Handshake::Clients::Users.new
+    self.client = Handshake::Clients::Users.new
 
-  def self.find_all
-    response = self.client.get
-    raise Handshake::Exceptions::ApiError unless response["success"]
+    # Class Methods
 
-    return nil if response["users"].empty?
-    users = response["users"]
-    users.map { |user| self.new(user) }
+    def self.find_all
+      response = client.get
+      return nil if response["users"].empty?
+      users = response["users"]
+      users.map { |user| self.new(user) }
+    end
+
+    def self.find(params)
+      response = client.get(params)
+
+      return nil if response["users"].empty?
+      user = response["users"].first
+      self.new(user)
+    end
+
+    def self.start_sync
+      response = client.start_sync
+      response["success"]
+    end
+
+    def self.end_sync
+      response = client.end_sync
+      response["success"]
+    end
+
+    def self.sync_details
+      client.sync_details.symbolize_keys
+    end
+
+    # Instance Methods
+
+    def create_or_update
+      response = client.create_or_update
+      errors = response["errors"].symbolize_keys
+      response["success"]
+    end
+
+    def save
+      response = client.post(attributes)
+      errors = response["errors"].symbolize_keys
+      response["success"]
+    end
+
+    def update
+      response = client.put(attributes)
+      errors = response["errors"].symbolize_keys
+      response["success"]
+    end
+
+    def destroy
+      response = client.delete(attributes)
+      errors = response["errors"].symbolize_keys
+      response["success"]
+    end
+
+    def attributes
+      attributes = Hash[ ATTRS.map { |attr| [attr, self.send(attr)] } ]
+    end
+
   end
-
-  def self.find(params = {})
-    return nil if params.empty?
-    response = client.get(params)
-
-    return nil if response["users"].empty?
-    user = response["users"].first
-    self.new(user)
-  end
-
-  def save
-    response = client.post(attributes)
-  end
-
-  def update
-    response = client.put(attributes)
-  end
-
-  def destroy
-    response = client.delete(attributes)
-  end
-
-  def attributes
-    attributes = Hash[ ATTRS.map { |attr| [attr, self.send(attr)] } ]
-  end
-
 end
 
   # Below are all the attributes from Handshake

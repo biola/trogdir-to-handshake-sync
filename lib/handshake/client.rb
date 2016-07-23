@@ -7,19 +7,28 @@ class Handshake::Client
   # Each class method takes an endpoint string and an options hash.
   # These class methods are responsible for dynamically creating
   # instance methods whos name is derived from options[:as]
-  # This allows us to have a DSL for creating instance methods like the following:
-  #      get "/users", as: :find
-  #      post "/users", as: :create
+  # This allows us to have a DSL for creating instance methods.
+  # Examples:
+  #   get "/users"
+  #   post "/users", as: :create
 
   http_methods.each do |http_method|
+    define_http_class_methods(http_method)
+  end
+
+  # Class Methods
+
+  def self.define_http_class_methods(http_method)
     self.define_singleton_method(http_method) do |endpoint, options = {}|
-      instance_method_name = options[:as] || http_method
+
       headers = authorization.merge(options[:headers] || {})
+      url = base_url + endpoint
+
+      instance_method_name = options[:as] || http_method
 
       define_method(instance_method_name) do |params = nil|
         params = { params: params }
         id = params[:id]
-        url = base_url + endpoint
 
         if id
           url << "/#{id}"
@@ -34,6 +43,8 @@ class Handshake::Client
     end
   end
 
+  # Instance Methods
+  
   def base_url
     self.class.superclass.base_url
   end
