@@ -13,6 +13,7 @@ module Handshake::Models
     end
 
     attr_accessor :errors
+    private :errors=
 
     # Class Methods
 
