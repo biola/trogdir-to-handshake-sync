@@ -27,13 +27,13 @@ class Handshake::Client
       instance_method_name = options[:as] || http_method
 
       define_method(instance_method_name) do |params = nil|
-        params = { params: params }
-        id = params[:id]
-
-        if id
-          url << "/#{id}"
+        
+        if params[:id]
+          url << "/#{params[:id]}"
           params.delete(:id)
         end
+
+        params = { params: params }
 
         response = RestClient::Request.execute(method: http_method,
                                                url: url,
@@ -44,7 +44,7 @@ class Handshake::Client
   end
 
   # Instance Methods
-  
+
   def base_url
     self.class.superclass.base_url
   end
