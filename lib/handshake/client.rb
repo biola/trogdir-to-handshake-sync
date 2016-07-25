@@ -1,8 +1,6 @@
 class Handshake::Client
   extend Handshake::Config
 
-  http_methods = [:get, :post, :put, :delete]
-
   # This creates class methods for each of the http_methods.
   # Each class method takes an endpoint string and an options hash.
   # These class methods are responsible for dynamically creating
@@ -11,10 +9,6 @@ class Handshake::Client
   # Examples:
   #   get "/users"
   #   post "/users", as: :create
-
-  http_methods.each do |http_method|
-    define_http_class_methods(http_method)
-  end
 
   def self.define_http_class_methods(http_method)
     self.define_singleton_method(http_method) do |endpoint, options = {}|
@@ -37,6 +31,12 @@ class Handshake::Client
         JSON.parse(response)
       end
     end
+  end
+
+  http_methods = [:get, :post, :put, :delete]
+
+  http_methods.each do |http_method|
+    define_http_class_methods(http_method)
   end
 
   def base_url

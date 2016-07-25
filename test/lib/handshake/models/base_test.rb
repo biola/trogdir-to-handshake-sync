@@ -4,6 +4,7 @@ class BaseTest < ActiveSupport::TestCase
 
   def setup
     @class = Handshake::Models::Base
+    @instance = @class.new
   end
 
   test "should respond to .client" do
@@ -17,7 +18,6 @@ class BaseTest < ActiveSupport::TestCase
   test ".define_accessors should create setters and getters on an instance" do
     attrs = [:first, :second]
     @class.define_accessors(attrs)
-    @instance = @class.new
 
     assert_respond_to @instance, :first
     assert_respond_to @instance, :first=
@@ -26,19 +26,14 @@ class BaseTest < ActiveSupport::TestCase
   end
 
   test "instances should respond to #client" do
-    @instance = @class.new
-
     assert_respond_to @instance, :client
   end
 
   test "instances should respond to #errors" do
-    @instance = @class.new
-
     assert_respond_to @instance, :errors
   end
 
   test "#errors= should be private among instances" do
-    @instance = @class.new
     @instance.send :errors=, "blah"
 
     refute_respond_to @instance, :errors=
