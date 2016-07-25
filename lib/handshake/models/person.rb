@@ -4,7 +4,7 @@ module Handshake::Models
 
     ATTRS = [:user_type, :id, :username, :first_name, :last_name, :email_address, :mobile_number]
 
-    define_accessors(ATTRS)
+    define_accessors ATTRS
 
     self.client = Handshake::Clients::Users.new
 
@@ -43,30 +43,33 @@ module Handshake::Models
 
     def create_or_update
       response = client.create_or_update
-      errors = response["errors"].symbolize_keys
-      response["success"]
+      capture_errors_and_return_status(response)
     end
 
     def save
       response = client.post(attributes)
-      errors = response["errors"].symbolize_keys
-      response["success"]
+      capture_errors_and_return_status(response)
     end
 
     def update
       response = client.put(attributes)
-      errors = response["errors"].symbolize_keys
-      response["success"]
+      capture_errors_and_return_status(response)
     end
 
     def destroy
       response = client.delete(attributes)
-      errors = response["errors"].symbolize_keys
-      response["success"]
+      capture_errors_and_return_status(response)
     end
 
     def attributes
       attributes = Hash[ ATTRS.map { |attr| [attr, self.send(attr)] } ]
+    end
+
+    private
+
+    def capture_errors_and_return_status(response)
+      errors = response["errors"].symbolize_keys
+      response["success"]
     end
 
   end

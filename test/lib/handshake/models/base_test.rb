@@ -1,0 +1,48 @@
+require 'test_helper'
+
+class BaseTest < ActiveSupport::TestCase
+
+  def setup
+    @class = Handshake::Models::Base
+  end
+
+  test "should respond to .client" do
+    assert_respond_to @class, :client
+  end
+
+  test "should respond for .client=" do
+    assert_respond_to @class, :client=
+  end
+
+  test ".define_accessors should create setters and getters on an instance" do
+    attrs = [:first, :second]
+    @class.define_accessors(attrs)
+    @instance = @class.new
+
+    assert_respond_to @instance, :first
+    assert_respond_to @instance, :first=
+    assert_respond_to @instance, :second
+    assert_respond_to @instance, :second=
+  end
+
+  test "instances should respond to #client" do
+    @instance = @class.new
+
+    assert_respond_to @instance, :client
+  end
+
+  test "instances should respond to #errors" do
+    @instance = @class.new
+
+    assert_respond_to @instance, :errors
+  end
+
+  test "#errors= should be private among instances" do
+    @instance = @class.new
+    @instance.send :errors=, "blah"
+
+    refute_respond_to @instance, :errors=
+    assert_equal @instance.errors, "blah"
+  end
+
+end

@@ -16,18 +16,14 @@ class Handshake::Client
     define_http_class_methods(http_method)
   end
 
-  # Class Methods
-
   def self.define_http_class_methods(http_method)
     self.define_singleton_method(http_method) do |endpoint, options = {}|
 
       headers = authorization.merge(options[:headers] || {})
       url = base_url + endpoint
-
       instance_method_name = options[:as] || http_method
 
       define_method(instance_method_name) do |params = nil|
-        
         if params[:id]
           url << "/#{params[:id]}"
           params.delete(:id)
@@ -42,8 +38,6 @@ class Handshake::Client
       end
     end
   end
-
-  # Instance Methods
 
   def base_url
     self.class.superclass.base_url

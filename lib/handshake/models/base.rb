@@ -2,7 +2,7 @@ module Handshake::Models
 
   # All Handshake models inherit from this base class.
   # The idea is for the subclasses to set an ATTRS constant with
-  # an array of attributes. Calling .define_accessors will 
+  # an array of attributes. Calling .define_accessors will
   # dynamically create setters and getters for them.
 
   class Base
