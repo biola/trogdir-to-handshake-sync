@@ -2,8 +2,14 @@ require 'test_helper'
 
 class ClientTest < ActiveSupport::TestCase
 
+  class FakeSubclass < Handshake::Client
+    get '/foo'
+    get '/bar', as: :bar
+  end
+
   def setup
     @class = Handshake::Client
+    @subclass = FakeSubclass
   end
 
   test "should respond to .get, .post, .put, .delete" do
@@ -16,6 +22,20 @@ class ClientTest < ActiveSupport::TestCase
   test "instances should respond to #base_url" do
     instance = @class.new
     assert_respond_to instance, :base_url
+  end
+
+  test "subclass instances should have enpoint instance methods" do
+    instance = @subclass.new
+    assert_respond_to instance, :get
+    assert_respond_to instance, :bar
+  end
+
+  test "subclass instances should execute call to external api" do
+    instance = @subclass.new
+    fake_rest_client = mock('object')
+    fake_rest_client.expects(:execute).returns("[]")
+    @subclass.stubs(:rest_client).returns( fake_rest_client )
+    instance.get
   end
 
 end

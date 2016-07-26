@@ -17,7 +17,7 @@ class Handshake::Client
       url = base_url + endpoint
       instance_method_name = options[:as] || http_method
 
-      define_method(instance_method_name) do |params = nil|
+      define_method(instance_method_name) do |params = {}|
         if params[:id]
           url << "/#{params[:id]}"
           params.delete(:id)
@@ -25,12 +25,16 @@ class Handshake::Client
 
         params = { params: params }
 
-        response = RestClient::Request.execute(method: http_method,
-                                               url: url,
-                                               headers: headers.merge(params) )
+        response = self.class.rest_client.execute(method: http_method,
+                                                  url: url,
+                                                  headers: headers.merge(params) )
         JSON.parse(response)
       end
     end
+  end
+
+  def self.rest_client
+    RestClient::Request
   end
 
   http_methods = [:get, :post, :put, :delete]
