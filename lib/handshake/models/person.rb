@@ -12,7 +12,7 @@ module Handshake::Models
 
     def self.find_all
       response = client.get
-      return nil if response["users"].empty?
+      return [] if response["users"].empty?
       users = response["users"]
       users.map { |user| self.new(user) }
     end
@@ -68,7 +68,7 @@ module Handshake::Models
     private
 
     def capture_errors_and_return_status(response)
-      errors = response["errors"].symbolize_keys
+      self.errors = response["errors"].symbolize_keys
       response["success"]
     end
 
