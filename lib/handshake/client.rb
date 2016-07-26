@@ -18,11 +18,6 @@ class Handshake::Client
       instance_method_name = options[:as] || http_method
 
       define_method(instance_method_name) do |params = {}|
-        if params[:id]
-          url << "/#{params[:id]}"
-          params.delete(:id)
-        end
-
         params = { params: params }
 
         response = rest_client.execute(method: http_method,
