@@ -31,10 +31,9 @@ class ClientTest < ActiveSupport::TestCase
   end
 
   test "subclass instances should execute call to external api" do
-    instance = @subclass.new
     fake_rest_client = mock('object')
     fake_rest_client.expects(:execute).returns("[]")
-    @subclass.stubs(:rest_client).returns( fake_rest_client )
+    instance = @subclass.new(fake_rest_client)
     instance.get
   end
 

@@ -25,16 +25,12 @@ class Handshake::Client
 
         params = { params: params }
 
-        response = self.class.rest_client.execute(method: http_method,
+        response = rest_client.execute(method: http_method,
                                                   url: url,
                                                   headers: headers.merge(params) )
         JSON.parse(response)
       end
     end
-  end
-
-  def self.rest_client
-    RestClient::Request
   end
 
   http_methods = [:get, :post, :put, :delete]
@@ -45,6 +41,14 @@ class Handshake::Client
 
   def base_url
     self.class.superclass.base_url
+  end
+
+  def initialize(rest_client = RestClient::Request)
+    @rest_client = rest_client
+  end
+
+  def rest_client
+    @rest_client
   end
 
 end
