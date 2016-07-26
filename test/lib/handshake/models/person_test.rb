@@ -12,6 +12,8 @@ module Handshake::Models
     end
 
     def setup
+      @fake_client = mock('object')
+      described_class.client = @fake_client
       @instance = described_class.new
     end
 
@@ -26,35 +28,27 @@ module Handshake::Models
     end
 
     test ".find_all should call client and return an array of Persons" do
-      fake_client = mock('object')
-      fake_client.expects(:get).returns({ "users" => { "foo" => "bar" } })
-      described_class.client = fake_client
+      @fake_client.expects(:get).returns({ "users" => { "foo" => "bar" } })
       persons = described_class.find_all
       assert_instance_of Array, persons
       assert_instance_of Person, persons.first
     end
 
     test ".find_all should return an empty array if users are empty " do
-      fake_client = mock('object')
-      fake_client.expects(:get).returns({ "users" => "" })
-      described_class.client = fake_client
+      @fake_client.expects(:get).returns({ "users" => "" })
       persons = described_class.find_all
       assert_instance_of Array, persons
       assert_empty persons
     end
 
     test ".find should call client and return a Person" do
-      fake_client = mock('object')
-      fake_client.expects(:get).returns({ "users" => { "foo" => "bar" } })
-      described_class.client = fake_client
+      @fake_client.expects(:get).returns({ "users" => { "foo" => "bar" } })
       person = described_class.find(query: "blah")
       assert_instance_of Person, person
     end
 
     test ".find should return nil if client response is empty" do
-      fake_client = mock('object')
-      fake_client.expects(:get).returns({ "users" => "" })
-      described_class.client = fake_client
+      @fake_client.expects(:get).returns({ "users" => "" })
       person = described_class.find(query: "blah")
       assert_equal person, nil
     end
