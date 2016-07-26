@@ -68,7 +68,7 @@ module Handshake::Models
     private
 
     def capture_errors_and_return_status(response)
-      self.errors = response["errors"].symbolize_keys
+      self.errors = response["errors"].to_h.symbolize_keys
       response["success"]
     end
 

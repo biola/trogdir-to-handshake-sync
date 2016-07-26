@@ -23,7 +23,7 @@ module Handshake::Models
 
     test "instances should have accessors for each attribute" do
       attrs.each do |attr|
-        assert_respond_to @instance, attr
+        assert @instance.respond_to? attr
       end
     end
 
@@ -51,6 +51,25 @@ module Handshake::Models
       @fake_client.expects(:get).returns({ "users" => "" })
       person = described_class.find(query: "blah")
       assert_equal person, nil
+    end
+
+    test "#save should make api call" do
+      @fake_client.expects(:post).returns({ "success" => true })
+      result = @instance.save
+      assert_equal result, true
+    end
+
+    test "#save should capture errors if any" do
+      @fake_client.expects(:post).returns({ "success" => false, "errors" => { "foo"=>"bar"} })
+      result = @instance.save
+      assert_equal result, false
+      assert_equal @instance.errors, { foo: "bar"}
+    end
+
+    test '#attributes should return a hash of all the attributes' do
+      attributes = @instance.attributes
+      assert_instance_of Hash, attributes
+      assert_equal attributes.keys, attrs
     end
   end
 end
